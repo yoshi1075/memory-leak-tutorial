@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MemoryLeakApp</string>
+    <string name="title_activity_memory_leak">MemoryLeakActivity</string>
+</resources>
