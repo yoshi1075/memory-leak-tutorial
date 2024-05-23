@@ -1,43 +1,36 @@
 package com.example.memoryleakapp
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
 import com.example.memoryleakapp.ui.theme.MemoryLeakAppTheme
 
 class MemoryLeakActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (innerClass == null) {
-            innerClass = LeakyInnerClass()
-        }
         setContent {
             MemoryLeakAppTheme {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    Button(
-                        onClick = { finish() }
-                    ) {
-                        Text(text = "Back")
-                    }
-                }
+                LeakyComposable(context = LocalContext.current)
             }
         }
     }
+}
 
-    inner class LeakyInnerClass
+object LeakyCompositionLocal {
+    var current: Context? = null
+}
 
-    companion object {
-        private var innerClass: LeakyInnerClass? = null
+@Composable
+fun LeakyComposable(context: Context) {
+    DisposableEffect(Unit) {
+        LeakyCompositionLocal.current = context
+        onDispose {
+            // この処理をしないことでコンテキストが解放されない
+        }
     }
+    // 他のCompose UIコード
 }
